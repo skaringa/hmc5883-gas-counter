@@ -34,6 +34,12 @@ The program monitors that magnetic induction and every time it detects a rotatio
 
   ./hmc5883\_gas\_counter.py
 
+
+www
+===
+
+The sub-directory *www* contains an example to produce a single web page to visualize daily, weekly, monthly, and yearly charts of consumption.
+
 License
 =======
 
