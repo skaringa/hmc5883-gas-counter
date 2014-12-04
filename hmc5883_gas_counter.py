@@ -36,6 +36,8 @@ address = 0x1e
 # Trigger level and hysteresis
 trigger_level = 1000
 trigger_hyst = 100
+# Amount to increase the counter at each trigger event
+trigger_step = 0.01
 
 # Path to RRD with counter values
 count_rrd = "%s/count.rrd" % (os.path.dirname(os.path.abspath(__file__)))
@@ -165,8 +167,8 @@ def main():
       trigger_state = 0
     if old_state == 0 and trigger_state == 1:
       # trigger active -> update count rrd
-      counter += 0.01
-      update = "N:%f:0.01" % (counter)
+      counter += trigger_step
+      update = "N:%f:%f" % (counter, trigger_step)
       #print update
       rrdtool.update(count_rrd, update)
 
