@@ -14,7 +14,9 @@ Prerequisites
 hmc5883\_gas\_counter.py
 ========================
 
-This program uses a 3 axis magnetometer to read the magnetic induction that is produced by a gas counter. The gas counter contains a small magnet that is attached to a rotating counter ring. Each rotation of the counter ring means a consumption of 0.01 m³ gas. The magnetic induction produced by the rotating magnet is read with a 3 axis magnetometer that is attached to the I²C bus of a Raspberry Pi.
+![Gas counter with magnetometer HMC5883 breakout](http://www.kompf.de/tech/images/countmag_m.jpg)
+
+This program uses the 3 axis magnetometer HMC5883 to read the magnetic induction which is produced by a gas counter. The gas counter contains a small magnet that is attached to a rotating counter ring. Each rotation of the counter ring means a consumption of 0.01 m³ gas. The magnetic induction produced by the rotating magnet is read with the magnetometer that is connected to the I²C bus of a Raspberry Pi.
 
 The program monitors that magnetic induction and every time it detects a rotation of the magnet it writes the actual counter and consumption values into a round robin database. 
 
@@ -39,6 +41,8 @@ www
 ===
 
 The sub-directory *www* contains an example to produce a single web page to visualize daily, weekly, monthly, and yearly charts of consumption.
+
+![Consumption of gas recorded over 24 hours](http://www.kompf.de/tech/images/consum-ph1.gif)
 
 License
 =======
