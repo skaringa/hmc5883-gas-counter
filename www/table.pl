@@ -32,6 +32,9 @@ $resolution=24*60*60;
 if ($range eq 'day') {
   $resolution=60*60;
   $timeformat="%a, %d. %b %Y %H:%M";
+} elsif ($range eq 'year') {
+  $resolution=7*24*60*60;
+  $timeformat="Wo %d. %b %Y";
 }
 
 if ($sensor eq 'count') {
@@ -40,6 +43,7 @@ if ($sensor eq 'count') {
   $title = "Zähler";
   $factor = 1.0;
   $cf = "LAST";
+  $timeformat="%a, %d. %b %Y %H:%M";
 } elsif ($sensor eq 'consum') {
   @indexes = (1);
   $title = "Verbrauch";
@@ -108,6 +112,7 @@ print thead(Tr(th({-class=>'time'}, $title), th([@headings])));
 print "\n";
 
 # print data
+$start -= 12*60*60 unless $timeformat =~ / %H:%M$/;
 for $line (@$data) {
   $hastime=0;
 

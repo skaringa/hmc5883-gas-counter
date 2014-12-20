@@ -71,6 +71,8 @@ sub count {
     "-s", "now - 1 $range",
     "-e", "now",
     "-D",
+    "-Y",
+    "-X 0",
     "-A");
   RRDs::graph($tmpfile,
     @opts,
