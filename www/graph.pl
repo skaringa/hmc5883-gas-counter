@@ -33,10 +33,12 @@ $ds=$1;
 $range=$2;
 $filename="/tmp/${type}_${size}.png";
 
-# create new image if existing file is older than rrd file
+# create new image if existing file is older than rrd file or than 6 hours
 my $maxdiff = 10;
 $maxdiff = 60 * 60 * 12 if $type eq 'tempyear';
-if ((mtime($rrd) - mtime($filename) > $maxdiff) or $force) {
+if ((mtime($rrd) - mtime($filename) > $maxdiff) 
+    or (time() - mtime($filename) > 6*3600) 
+    or $force) {
   $tmpfile="/tmp/${type}_${size}_$$.png";
   # call sub to create image according to type
   &$ds($range);
