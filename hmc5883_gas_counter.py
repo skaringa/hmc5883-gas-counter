@@ -141,6 +141,7 @@ def main():
   write_byte(2, 0b00000000) # Mode: Continuous sampling
 
   trigger_state = 0
+  timestamp = time.time()
   counter = last_rrd_count()
   print "restoring counter to %f" % counter
 
@@ -171,6 +172,13 @@ def main():
       update = "N:%f:%f" % (counter, trigger_step)
       #print update
       rrdtool.update(count_rrd, update)
+      timestamp = time.time()
+    elif time.time() - timestamp > 3600:
+      # at least on update every hour
+      update = "N:%f:%f" % (counter, 0)
+      #print update
+      rrdtool.update(count_rrd, update)
+      timestamp = time.time()
 
     time.sleep(1)
 
