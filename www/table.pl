@@ -37,28 +37,16 @@ if ($range eq 'day') {
   $timeformat="Wo %d. %b %Y";
 }
 
-if ($sensor eq 'count') {
-  @indexes = (0);
-  @headings = ('Zählerstand');
-  $title = "Zähler";
-  $factor = 1.0;
-  $cf = "LAST";
-  $timeformat="%a, %d. %b %Y %H:%M";
-} elsif ($sensor eq 'consum') {
-  @indexes = (1);
-  $title = "Verbrauch";
-  if ($range eq 'day') {
-    $factor = 60.0*60.0; # consumption per hour
-    @headings = ('m³/h');
-  } else {
-    $factor = 60.0*60.0*24; # consumption per day
-    @headings = ('m³/d');
-  }
-  $cf = "AVERAGE";
+if ($range eq 'day') {
+  @factors = (1.0, 60.0*60.0); # consumption per hour
+  @headings = ('Zähler', 'm³/h');
+} else {
+  @factors = (1.0, 60.0*60.0*24); # consumption per day
+  @headings = ('Zähler', 'm³/d');
 }
 
-
-($start,$step,$names,$data) = getdata($rrdb, $cf, $resolution, $range);
+($laststart,$laststep,$lastnames,$lastdata) = getdata($rrdb, 'LAST', $resolution, $range);
+($avrstart,$avrstep,$avrnames,$avrdata) = getdata($rrdb, 'AVERAGE', $resolution, $range);
 # print result
 
 # print heading
@@ -105,30 +93,26 @@ tbody {
 -->
 END
 
-print start_html(-title=>"Gasverbrauch - $title", 
+print start_html(-title=>"Gasverbrauch", 
   -style=>{-code=>$style},
   -meta=>{"viewport"=>"initial-scale=1, minimum-scale=0.75, width=device-width"}
 );
 print start_table();
 print "\n";
-print thead(Tr(th({-class=>'time'}, $title), th([@headings])));
+print thead(Tr(th({-class=>'time'}, ' '), th([@headings])));
 print "\n";
 
 # print data
-$start -= 12*60*60 unless $timeformat =~ / %H:%M$/;
-for $line (@$data) {
-  $hastime=0;
-
+$avrstart -= 12*60*60 unless $timeformat =~ / %H:%M$/;
+for $avrline (@$avrdata) {
+  $lastline = shift(@$lastdata);
   print start_Tr({-class=>'avrdata'});
-  if (! $hastime) {
-    print td({-class=>'time'}, strftime($timeformat, localtime($start)));
-  }
-
-  print formatline(@$line[@indexes]);
+  print td({-class=>'time'}, strftime($timeformat, localtime($avrstart)));
+  print formatline(@$lastline[0], @$avrline[1]);
   print end_Tr;
   print "\n";
 
-  $start += $step;
+  $avrstart += $avrstep;
 }
 print end_table();
 print end_html;
@@ -150,14 +134,15 @@ sub getdata {
 }
 
 sub formatline {
-  my @line = @_;
   my $str = '';
-  for $val (@line) {
+  my $i = 0;
+  for $val (@_) {
     if (defined $val) {
-      $str .= td(sprintf "%5.1f", $val * $factor);
+      $str .= td(sprintf "%5.1f", $val * $factors[$i]);
     } else {
       $str .= td;
     }
+    $i++;
   }
   return $str;
 }
