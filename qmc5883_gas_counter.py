@@ -1,6 +1,6 @@
 #!/usr/bin/python -u
 #
-# hmc5883_gas_counter.py
+# qmc5883_gas_counter.py
 # 
 # Program to read the gas counter value by using the digital magnetometer HMC5883
 
@@ -31,7 +31,7 @@ import argparse
 # I2C bus (1 at newer Raspberry Pi, older models use 0)
 bus = smbus.SMBus(1)
 # I2C address of HMC5883
-address = 0x1e
+address = 0x0d
 
 # Trigger level and hysteresis
 trigger_level = 1000
