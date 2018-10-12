@@ -2,7 +2,7 @@
 #
 # qmc5883_gas_counter.py
 # 
-# Program to read the gas counter value by using the digital magnetometer HMC5883
+# Program to read the gas counter value by using the digital magnetometer qmc5883
 
 # Copyright 2014 Martin Kompf
 #
@@ -30,7 +30,7 @@ import argparse
 # Global data
 # I2C bus (1 at newer Raspberry Pi, older models use 0)
 bus = smbus.SMBus(1)
-# I2C address of HMC5883
+# I2C address of qmc5883
 address = 0x0d
 
 # Trigger level and hysteresis
@@ -45,7 +45,7 @@ count_rrd = "%s/count.rrd" % (os.path.dirname(os.path.abspath(__file__)))
 # Path to RRD with magnetometer values (for testing and calibration only)
 mag_rrd = "%s/mag.rrd" % (os.path.dirname(os.path.abspath(__file__)))
 
-# Read block data from HMC5883
+# Read block data from qmc5883
 def read_data():
   return bus.read_i2c_block_data(address, 0x00)
 
@@ -59,7 +59,7 @@ def twos_complement(val, len):
 def convert_sw(data, offset):
   return twos_complement(data[offset] << 8 | data[offset+1], 16)
 
-# Write one byte to HMC5883
+# Write one byte to qmc5883
 def write_byte(adr, value):
   bus.write_byte_data(address, adr, value)
 
@@ -127,7 +127,7 @@ def write_mag_rrd(bx, by, bz):
 # Main
 def main():
   # Check command args
-  parser = argparse.ArgumentParser(description='Program to read the gas counter value by using the digital magnetometer HMC5883.')
+  parser = argparse.ArgumentParser(description='Program to read the gas counter value by using the digital magnetometer qmc5883.')
   parser.add_argument('-c', '--create', action='store_true', default=False, help='Create rrd databases if necessary')
   parser.add_argument('-m', '--magnetometer', action='store_true', default=False, help='Store values of magnetic induction into mag rrd')
   args = parser.parse_args()
@@ -135,10 +135,10 @@ def main():
   if args.create:
     create_rrds()
 
-  # Init HMC5883
-  write_byte(0, 0b01110000) # Rate: 8 samples @ 15Hz
-  write_byte(1, 0b11100000) # Sensor field range: 8.1 Ga
-  write_byte(2, 0b00000000) # Mode: Continuous sampling
+  # Init QMC5883 (Datasheet can be found here: http://osoyoo.com/driver/QMC5883L-Datasheet-1.0.pdf)
+  write_byte(0x09, 0b11010001)  # Rate: 64 samples @10 Hz, Field range: 8G, Continuous sampling
+  write_byte(0x0A, 0b10000001)  # Normal, Interrupt
+  write_byte(0x0B, 0b00000001)  # Datasheet recommended
 
   trigger_state = 0
   timestamp = time.time()
@@ -146,7 +146,7 @@ def main():
   print "restoring counter to %f" % counter
 
   while(1==1):
-    # read data from HMC5883
+    # read data from qmc5883
     data = read_data()
   
     # get x,y,z values of magnetic induction
