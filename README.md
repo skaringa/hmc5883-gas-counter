@@ -1,5 +1,8 @@
-hmc5883-gas-counter
+qmc5883-gas-counter
 ====================
+
+# This is a patched version support the qmc5883 model. Byte registers are changed based von the Datasheet found here: http://osoyoo.com/driver/QMC5883L-Datasheet-1.0.pdf.
+# The original version may be found ![here](https://github.com/skaringa/hmc5883-gas-counter).
 
 Program to monitor the consumption of gas used for heating in a household .
 
@@ -7,34 +10,34 @@ Prerequisites
 =============
 
 * Gas counter with a rotating magnet
-* Digital 3 axis magnetometer HMC5883L
+* Digital 3 axis magnetometer qmc5883L
 * Raspberry Pi Model A or B
 * Python 2.7
 
-hmc5883\_gas\_counter.py
+qmc5883\_gas\_counter.py
 ========================
 
-![Gas counter with magnetometer HMC5883 breakout](http://www.kompf.de/tech/images/countmag_m.jpg)
+![Gas counter with magnetometer qmc5883 breakout](http://www.kompf.de/tech/images/countmag_m.jpg)
 
-This program uses the 3 axis magnetometer HMC5883 to read the magnetic induction which is produced by a gas counter. The gas counter contains a small magnet that is attached to a rotating counter ring. Each rotation of the counter ring means a consumption of 0.01 m³ gas. The magnetic induction produced by the rotating magnet is read with the magnetometer that is connected to the I²C bus of a Raspberry Pi.
+This program uses the 3 axis magnetometer qmc5883 to read the magnetic induction which is produced by a gas counter. The gas counter contains a small magnet that is attached to a rotating counter ring. Each rotation of the counter ring means a consumption of 0.01 m³ gas. The magnetic induction produced by the rotating magnet is read with the magnetometer that is connected to the I²C bus of a Raspberry Pi.
 
 The program monitors that magnetic induction and every time it detects a rotation of the magnet it writes the actual counter and consumption values into a round robin database. 
 
 *Help:* 
 
-  ./hmc5883\_gas\_counter.py -h
+  ./qmc5883\_gas\_counter.py -h
 
 *Create rrd databases:*
 
-  ./hmc5883\_gas\_counter.py -c
+  ./qmc5883\_gas\_counter.py -c
 
 *Store values of magnetic induction into mag.rrd:*
 
-  ./hmc5883\_gas\_counter.py -m
+  ./qmc5883\_gas\_counter.py -m
 
 *Normal operation:*
 
-  ./hmc5883\_gas\_counter.py
+  ./qmc5883\_gas\_counter.py
 
 
 www
