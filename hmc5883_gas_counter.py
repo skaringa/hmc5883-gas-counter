@@ -65,7 +65,7 @@ def write_byte(adr, value):
 
 # Create the Round Robin Databases
 def create_rrds():
-  print 'Creating RRD: ' + mag_rrd
+  print('Creating RRD: ' + mag_rrd)
   # Create RRD to store magnetic induction values bx, by, bz:
   # 1 value per second
   # 86400 rows == 1 day
@@ -78,9 +78,9 @@ def create_rrds():
       'DS:bz:GAUGE:2:-2048:2048',
       'RRA:AVERAGE:0.5:1:86400')
   except Exception as e:
-    print 'Error ' + str(e)
+    print('Error ' + str(e))
 
-  print 'Creating RRD: ' + count_rrd
+  print('Creating RRD: ' + count_rrd)
   # Create RRD to store counter and consumption:
   # 1 trigger cycle matches consumption of 0.01 m**3
   # Counter is GAUGE
@@ -103,25 +103,20 @@ def create_rrds():
       'RRA:LAST:0.5:10080:520',
       'RRA:AVERAGE:0.5:10080:520')
   except Exception as e:
-    print 'Error ' + str(e)
+    print('Error ' + str(e))
 
 # Get the last counter value from the rrd database
 def last_rrd_count():
-  val = 0.0
-  handle = os.popen("rrdtool lastupdate " + count_rrd)
-  for line in handle:
-    m = re.match(r"^[0-9]*: ([0-9.]*) [0-9.]*", line)
-    if m:
-      val = float(m.group(1))
-      break
-  handle.close()
+  val = rrdtool.lastupdate(count_rrd)['ds']['counter']
+  if val is None:
+    val = 0
   return val
 
 # Write values of magnetic induction into mag rrd
 # This is for testing and calibration only!
 def write_mag_rrd(bx, by, bz):
   update = "N:%d:%d:%d" % (bx, by, bz)
-  #print update
+  #print(update)
   rrdtool.update(mag_rrd, update)
 
 # Main
@@ -140,10 +135,11 @@ def main():
   write_byte(1, 0b11100000) # Sensor field range: 8.1 Ga
   write_byte(2, 0b00000000) # Mode: Continuous sampling
 
+
   trigger_state = 0
   timestamp = time.time()
   counter = last_rrd_count()
-  print "restoring counter to %f" % counter
+  print("restoring counter to %f" % counter)
 
   while(1==1):
     # read data from HMC5883
@@ -169,14 +165,14 @@ def main():
     if old_state == 0 and trigger_state == 1:
       # trigger active -> update count rrd
       counter += trigger_step
-      update = "N:%f:%f" % (counter, trigger_step)
-      #print update
+      update = "%d:%f:%f" % (int(time.time()), counter, trigger_step)
+      #print(update)
       rrdtool.update(count_rrd, update)
       timestamp = time.time()
     elif time.time() - timestamp > 3600:
       # at least on update every hour
-      update = "N:%f:%f" % (counter, 0)
-      #print update
+      update = "%d:%f:%f" % (int(time.time()), counter, 0)
+      #print(update)
       rrdtool.update(count_rrd, update)
       timestamp = time.time()
 
