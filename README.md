@@ -9,7 +9,7 @@ Prerequisites
 * Gas counter with a rotating magnet
 * Digital 3 axis magnetometer HMC5883L
 * Raspberry Pi Model A or B
-* Python 2.7
+* Python 3
 
 hmc5883\_gas\_counter.py
 ========================
